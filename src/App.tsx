@@ -5,16 +5,19 @@ import Search from "./Routes/Search";
 import Header from "./components/Header";
 import Series from "./Routes/Series";
 import Movie from "./Routes/Movie";
+import { ContentWrap } from "./style/style";
 function App() {
     return (
         <Router>
             <Header />
-            <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/series" element={<Series />} />
-                <Route path="/movie" element={<Movie />} />
-                <Route path="/search" element={<Search />} />
-            </Routes>
+            <ContentWrap>
+                <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/series" element={<Series />} />
+                    <Route path="/movie" element={<Movie />} />
+                    <Route path="/search" element={<Search />} />
+                </Routes>
+            </ContentWrap>
         </Router>
     );
 }

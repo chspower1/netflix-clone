@@ -11,6 +11,7 @@ const GlobalStyle = createGlobalStyle`
   ${reset}
   *{
     box-sizing: border-box;
+    text-decoration: none;
   }
 
 `;

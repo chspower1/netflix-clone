@@ -1,13 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation, useRoutes } from "react-router-dom";
 import styled from "styled-components";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useScroll, useAnimation } from "framer-motion";
 
-const Nav = styled.nav`
+const Nav = styled(motion.nav)`
     display: flex;
     position: fixed;
     justify-content: space-between;
-    background-color: #d4d4d4;
     height: 60px;
     width: 100%;
     margin-bottom: 60px;
@@ -43,6 +42,7 @@ const SearchBox = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
+    margin-right: 50px;
 `;
 const Magnifify = styled(motion.svg)`
     z-index: 10;
@@ -50,10 +50,11 @@ const Magnifify = styled(motion.svg)`
 const Input = styled(motion.input)`
     transform-origin: right center;
     position: absolute;
-    right: 0px;
-    border-radius: 13px;
+    right: 50px;
+    text-align: center;
+    height: 30px;
+    border-radius: 15px;
     border: none;
-    height: 25px;
 `;
 // Variants
 const LogoVariants = {
@@ -64,16 +65,36 @@ const LogoVariants = {
         fill: "rgb(0,0,0)",
     },
 };
+const navVariants = {
+    top: {
+        backgroundColor: "rgba(212, 212, 212,0)",
+    },
+    scroll: {
+        backgroundColor: "rgba(212, 212, 212,1)",
+    },
+};
 export default function Header() {
     const { pathname } = useLocation();
     const [searchOpen, setSearchOpen] = useState(false);
     const [curState, setCurState] = useState(pathname === "/" ? "home" : pathname.slice(1));
+    const { scrollY } = useScroll();
+    const navAnimation = useAnimation();
     const navMenus = ["home", "series", "movie"];
     const navKorMenus = ["홈", "시리즈", "영화"];
     console.log(curState);
     const toggleSearch = () => setSearchOpen((cur) => !cur);
+    useEffect(() => {
+        scrollY.onChange(() => {
+            // console.log(scrollY.get());
+            if (scrollY.get() > 80) {
+                navAnimation.start("scroll");
+            } else {
+                navAnimation.start("top");
+            }
+        });
+    }, []);
     return (
-        <Nav>
+        <Nav variants={navVariants} initial="top" animate={navAnimation}>
             <Col>
                 <Link to="/">
                     <Logo
@@ -103,7 +124,7 @@ export default function Header() {
                     <Magnifify
                         onClick={toggleSearch}
                         width={20}
-                        animate={{ x: searchOpen ? -180 : 0 }}
+                        animate={{ x: searchOpen ? -145 : 0 }}
                         transition={{ duration: 0.6 }}
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 512 512"
@@ -118,7 +139,7 @@ export default function Header() {
                                 animate={{ scaleX: 1 }}
                                 exit={{ scaleX: 0 }}
                                 transition={{ duration: 0.6 }}
-                                placeholder="Wirte to Search"
+                                placeholder="Search for movie"
                             />
                         )}
                     </AnimatePresence>

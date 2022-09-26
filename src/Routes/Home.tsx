@@ -41,18 +41,19 @@ const Slider = styled(motion.div)`
     align-items: center;
     width: 100%;
     height: 200px;
-    top: -100px;
 `;
 const Row = styled(motion.div)`
     position: absolute;
     display: grid;
     grid-template-columns: repeat(6, 1fr);
     width: 100%;
-    gap: 5px;
+    height: 100%;
+    /* gap: 5px; */
 `;
 const Box = styled(motion.div)`
     background-color: white;
     transform-origin: bottom center;
+    height: 100%;
     cursor: pointer;
     &:first-child {
         transform-origin: bottom left;
@@ -73,25 +74,36 @@ const BoxImg = styled(motion.img)`
 `;
 const BoxInfo = styled(motion.div)`
     position: fixed;
-    transform-origin: top center;
+    /* transform-origin: top center; */
     opacity: 0;
     width: 100%;
-    height: 0px;
+    height: 100px;
+    padding: 20px;
     background-color: rgb(36, 37, 37);
 `;
 
 const ArrowBtn = styled(motion.button)`
     z-index: 1000;
     position: absolute;
-    top: 50%;
+    height: 100%;
+    width: 60px;
+    background-color: rgba(0, 0, 0, 0.3);
+    border: none;
+    transform-origin: center center;
 `;
 const LeftBtn = styled(ArrowBtn)`
-    left: 20px;
+    left: 0;
 `;
 const RightBtn = styled(ArrowBtn)`
-    right: 20px;
+    right: 0px;
 `;
 const Svg = styled(motion.svg)`
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    margin: auto;
     width: 30px;
     height: 30px;
 `;
@@ -123,9 +135,24 @@ const sliderVariants = {
         transition: { duration: 1 },
     }),
 };
+const arrowVariants = {
+    initial: {
+        opacity: 0,
+    },
+    animate: { opacity: 1 },
+    exit: { opacity: 0 },
+};
+const arrowBtnVariants = {
+    initial: {
+        scaleY: 0,
+    },
+    animate: { scaleY: 1 },
+    exit: { scaleY: 0 },
+};
 const boxVariants = {
     hover: {
         scale: 1.3,
+
         transition: {
             delay: 0.3,
             duration: 0.3,
@@ -133,13 +160,10 @@ const boxVariants = {
     },
 };
 const boxInfoVariants = {
-    initial: {
-        y: -5,
-    },
+    initial: { y: -5 },
     hover: {
         opacity: 1,
         y: -5,
-        height: "70%",
         transition: {
             type: "tween",
             delay: 0.3,
@@ -192,17 +216,41 @@ export default function Home() {
                 <OverView>{data?.results[0].overview}</OverView>
             </Banner>
             <Slider>
-                <LeftBtn onClick={() => onClickSlide(false)}>
-                    <Svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
-                        <path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l192 192c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 278.6 86.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-192 192z" />
-                    </Svg>
-                </LeftBtn>
-                <RightBtn onClick={() => onClickSlide(true)}>
-                    <Svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
-                        <path d="M342.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L274.7 256 105.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z" />
-                    </Svg>
-                </RightBtn>
-                <AnimatePresence initial={false} custom={next} onExitComplete={toggleLeaving}>
+                <AnimatePresence>
+                    <LeftBtn
+                        variants={arrowVariants}
+                        initial="initial"
+                        whileHover="animate"
+                        exit="exit"
+                        onClick={() => onClickSlide(false)}
+                    >
+                        <Svg
+                            variants={arrowBtnVariants}
+                            fill="white"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 384 512"
+                        >
+                            <path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l192 192c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 278.6 86.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-192 192z" />
+                        </Svg>
+                    </LeftBtn>
+                    <RightBtn
+                        variants={arrowVariants}
+                        initial="initial"
+                        whileHover="animate"
+                        exit="exit"
+                        onClick={() => onClickSlide(true)}
+                    >
+                        <Svg
+                            variants={arrowBtnVariants}
+                            fill="white"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 384 512"
+                        >
+                            <path d="M342.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L274.7 256 105.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z" />
+                        </Svg>
+                    </RightBtn>
+                </AnimatePresence>
+                <AnimatePresence initial={true} custom={next} onExitComplete={toggleLeaving}>
                     <Row
                         custom={next}
                         variants={sliderVariants}
@@ -225,6 +273,7 @@ export default function Home() {
                                     transition={{ duration: 0.4, type: "tween" }}
                                 >
                                     <BoxImg src={getImage(movie.backdrop_path!, "w500")} alt="#" />
+
                                     <BoxInfo variants={boxInfoVariants}>{movie.title}</BoxInfo>
                                 </Box>
                             ))}

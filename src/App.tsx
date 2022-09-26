@@ -13,6 +13,7 @@ function App() {
             <ContentWrap>
                 <Routes>
                     <Route path="/" element={<Home />} />
+                    <Route path="/movies/:movieId" element={<Home />} />
                     <Route path="/series" element={<Series />} />
                     <Route path="/movie" element={<Movie />} />
                     <Route path="/search" element={<Search />} />

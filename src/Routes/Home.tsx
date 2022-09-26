@@ -4,6 +4,7 @@ import { getMovies, Movies, Movie } from "../api";
 import styled from "styled-components";
 import { getImage } from "../utils";
 import { AnimatePresence, motion } from "framer-motion";
+import { useNavigate, useMatch } from "react-router-dom";
 // styled-components
 const Wrap = styled.div`
     background-color: rgb(45, 52, 54);
@@ -36,8 +37,10 @@ const OverView = styled.p`
 `;
 const Slider = styled(motion.div)`
     position: relative;
+    display: flex;
+    align-items: center;
     width: 100%;
-    /* height: 200px; */
+    height: 200px;
     top: -100px;
 `;
 const Row = styled(motion.div)`
@@ -50,6 +53,7 @@ const Row = styled(motion.div)`
 const Box = styled(motion.div)`
     background-color: white;
     transform-origin: bottom center;
+    cursor: pointer;
     &:first-child {
         transform-origin: bottom left;
     }
@@ -91,7 +95,25 @@ const Svg = styled(motion.svg)`
     width: 30px;
     height: 30px;
 `;
-
+const MovieModal = styled(motion.div)`
+    z-index: 1000;
+    width: 50vw;
+    height: 50vh;
+    background-color: white;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    margin: auto;
+`;
+const Overlay = styled(motion.div)`
+    z-index: 100;
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0px;
+`;
 // Variants
 const sliderVariants = {
     initial: (next: boolean) => ({ x: next ? window.innerWidth + 10 : -window.innerWidth - 10 }),
@@ -118,11 +140,20 @@ const boxInfoVariants = {
         opacity: 1,
         y: -5,
         height: "70%",
-        // transition: {
-        //     type: "tween",
-        //     delay: 0.3,
-        //     duration: 0.3,
-        // },
+        transition: {
+            type: "tween",
+            delay: 0.3,
+            duration: 0.3,
+        },
+    },
+};
+
+const modalVariants = {
+    animate: {
+        scale: 1,
+    },
+    exit: {
+        scale: 0,
     },
 };
 
@@ -132,6 +163,9 @@ export default function Home() {
     const [next, setNext] = useState(true);
     const [page, setPage] = useState(0);
     const [leaving, setLeaving] = useState(false);
+    const navigate = useNavigate();
+    const movieMatch = useMatch("/movies/:movieId");
+    console.log(movieMatch);
     const toggleLeaving = () => {
         setLeaving((prev) => !prev);
     };
@@ -146,6 +180,9 @@ export default function Home() {
             );
             console.log(data?.results.length, maxPage, page);
         }
+    };
+    const onClickBox = (movieId: number) => {
+        navigate(`/movies/${movieId}`);
     };
     if (isLoading) return <Loader>Loading</Loader>;
     return (
@@ -179,6 +216,8 @@ export default function Home() {
                             .slice(offset * page, offset * page + offset)
                             .map((movie, index) => (
                                 <Box
+                                    onClick={() => onClickBox(movie?.id!)}
+                                    layoutId={String(movie?.id!)}
                                     key={movie.id}
                                     variants={boxVariants}
                                     initial="initial"
@@ -190,6 +229,25 @@ export default function Home() {
                                 </Box>
                             ))}
                     </Row>
+                </AnimatePresence>
+                <AnimatePresence>
+                    {movieMatch?.params && (
+                        <>
+                            <Overlay
+                                initial={{ backgroundColor: "rgba(0, 0, 0, 0)" }}
+                                animate={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
+                                exit={{ backgroundColor: "rgba(0, 0, 0, 0)" }}
+                                transition={{ duration: 0.4 }}
+                                onClick={() => navigate("/")}
+                            ></Overlay>
+                            <MovieModal
+                                layoutId={String(movieMatch?.params.movieId)}
+                                transition={{ duration: 0.4 }}
+                            >
+                                {movieMatch?.params.movieId}
+                            </MovieModal>
+                        </>
+                    )}
                 </AnimatePresence>
             </Slider>
         </Wrap>

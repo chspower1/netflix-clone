@@ -93,6 +93,10 @@ export default function Header() {
             }
         });
     }, []);
+    useEffect(() => {
+        console.log(pathname);
+        // setCurState();
+    }, [pathname]);
     return (
         <Nav variants={navVariants} initial="top" animate={navAnimation}>
             <Col>

@@ -1,7 +1,6 @@
 const API_KEY = "1a301bdc4abdaca0b146fc986fe4436c";
 const BASE_PATH = "https://api.themoviedb.org/3";
 
-
 export interface Movies {
     data: MovieDate;
     page: 1;
@@ -37,3 +36,10 @@ export async function getMovies() {
     ).json();
 }
 
+export async function getMovie(movieId: string) {
+    return await (
+        await fetch(
+            `${BASE_PATH}/movie/${movieId}?api_key=${API_KEY}&language=en-US&page=1&region=kr`
+        )
+    ).json();
+}

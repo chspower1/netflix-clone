@@ -46,9 +46,13 @@ const Row = styled(motion.div)`
     width: 100%;
     gap: 10px;
 `;
-const Box = styled(motion.div)`
+const Box = styled(motion.div)<{ bgUrl: string }>`
     background-color: white;
     height: 200px;
+    background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 1)),
+        url(${(props) => props.bgUrl});
+    background-size: cover;
+    background-position: center center;
 `;
 
 const ArrowBtn = styled(motion.button)`
@@ -91,7 +95,7 @@ export default function Home() {
             if (leaving) return console.log(leaving);
             setNext(next);
             toggleLeaving();
-            const maxPage = Math.ceil((data?.results.length - 1) / offset) - 1;
+            const maxPage = Math.floor((data?.results.length - 1) / offset) - 1;
             setPage((prev) =>
                 next ? (prev === maxPage ? 0 : prev + 1) : prev === 0 ? maxPage : prev - 1
             );
@@ -129,7 +133,7 @@ export default function Home() {
                             .slice(1)
                             .slice(offset * page, offset * page + offset)
                             .map((movie, index) => (
-                                <Box key={movie.id}>
+                                <Box key={movie.id} bgUrl={getImage(movie.backdrop_path!, "w500")}>
                                     {page * offset + index + 1}
                                     <br />
                                     {movie.title}

@@ -37,6 +37,7 @@ const Slider = styled(motion.div)`
     position: relative;
     width: 100%;
     height: 200px;
+    top: -100px;
 `;
 const Row = styled(motion.div)`
     position: absolute;
@@ -68,27 +69,34 @@ const Svg = styled(motion.svg)`
 
 // Variants
 const sliderVariants = {
-    initial: (next: boolean) => ({ x: next ? -window.outerWidth - 10 : window.outerWidth + 10 }),
-    animate: { x: 0, transition: { duration: 1 } },
+    initial: (next: boolean) => ({ x: next ? window.innerWidth + 10 : -window.innerWidth - 10 }),
+    animate: { x: 0, transition: { type: "tween", duration: 1 } },
     exit: (next: boolean) => ({
-        x: next ? window.outerWidth + 10 : -window.outerWidth - 10,
+        x: next ? -window.innerWidth - 10 : window.innerWidth + 10,
         transition: { duration: 1 },
     }),
 };
 
+const offset = 6;
 export default function Home() {
     const { isLoading, data } = useQuery<Movies>(["getMovies"], getMovies);
     const [next, setNext] = useState(true);
-    const [index, setIndex] = useState(0);
+    const [page, setPage] = useState(0);
     const [leaving, setLeaving] = useState(false);
     const toggleLeaving = () => {
         setLeaving((prev) => !prev);
     };
     const onClickSlide = (next: boolean) => {
-        if (leaving) return;
-        setNext(next);
-        toggleLeaving();
-        setIndex((prev) => prev - 1);
+        if (data) {
+            if (leaving) return console.log(leaving);
+            setNext(next);
+            toggleLeaving();
+            const maxPage = Math.ceil((data?.results.length - 1) / offset) - 1;
+            setPage((prev) =>
+                next ? (prev === maxPage ? 0 : prev + 1) : prev === 0 ? maxPage : prev - 1
+            );
+            console.log(data?.results.length, maxPage, page);
+        }
     };
     if (isLoading) return <Loader>Loading</Loader>;
     return (
@@ -108,18 +116,25 @@ export default function Home() {
                         <path d="M342.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L274.7 256 105.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z" />
                     </Svg>
                 </RightBtn>
-                <AnimatePresence custom={next} onExitComplete={toggleLeaving}>
+                <AnimatePresence initial={false} custom={next} onExitComplete={toggleLeaving}>
                     <Row
                         custom={next}
                         variants={sliderVariants}
                         initial="initial"
                         animate="animate"
                         exit="exit"
-                        key={index}
+                        key={page}
                     >
-                        {[1, 2, 3, 4, 5, 6].map((i) => (
-                            <Box key={i}>{i}</Box>
-                        ))}
+                        {data?.results
+                            .slice(1)
+                            .slice(offset * page, offset * page + offset)
+                            .map((movie, index) => (
+                                <Box key={movie.id}>
+                                    {page * offset + index + 1}
+                                    <br />
+                                    {movie.title}
+                                </Box>
+                            ))}
                     </Row>
                 </AnimatePresence>
             </Slider>

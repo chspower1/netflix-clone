@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Link, useLocation, useRoutes } from "react-router-dom";
+import { Link, useLocation, useNavigate, useRoutes } from "react-router-dom";
 import styled from "styled-components";
 import { motion, AnimatePresence, useScroll, useAnimation } from "framer-motion";
+import { useForm } from "react-hook-form";
 
 const Nav = styled(motion.nav)`
     display: flex;
@@ -38,7 +39,7 @@ const CurCircle = styled(motion.div)`
 
     background-color: rgb(216, 31, 38);
 `;
-const SearchBox = styled.div`
+const SearchBox = styled.form`
     display: flex;
     justify-content: center;
     align-items: center;
@@ -73,15 +74,28 @@ const navVariants = {
         backgroundColor: "rgba(212, 212, 212,1)",
     },
 };
+
+// Interface
+interface SearchForm {
+    keyword: string;
+}
 export default function Header() {
     const { pathname } = useLocation();
     const [searchOpen, setSearchOpen] = useState(false);
+    const navigate = useNavigate();
     const [curState, setCurState] = useState(pathname === "/" ? "home" : pathname.slice(1));
+    const { register, handleSubmit, reset } = useForm<SearchForm>();
     const { scrollY } = useScroll();
     const navAnimation = useAnimation();
     const navMenus = ["home", "series", "movie"];
     const navKorMenus = ["홈", "시리즈", "영화"];
+
     console.log(curState);
+
+    const onvalid = (data: SearchForm) => {
+        navigate(`/search?keyword=${data.keyword}`);
+        console.log(data);
+    };
     const toggleSearch = () => setSearchOpen((cur) => !cur);
     useEffect(() => {
         scrollY.onChange(() => {
@@ -124,7 +138,7 @@ export default function Header() {
                 </Items>
             </Col>
             <Col>
-                <SearchBox>
+                <SearchBox onSubmit={handleSubmit(onvalid)}>
                     <Magnifify
                         onClick={toggleSearch}
                         width={20}
@@ -138,6 +152,13 @@ export default function Header() {
                     <AnimatePresence>
                         {searchOpen && (
                             <Input
+                                {...register("keyword", {
+                                    required: "검색어를 입력해주세요",
+                                    minLength: {
+                                        value: 2,
+                                        message: "두글자 이상 입력해주세요",
+                                    },
+                                })}
                                 type="text"
                                 initial={{ scaleX: 0 }}
                                 animate={{ scaleX: 1 }}

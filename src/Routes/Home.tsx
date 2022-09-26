@@ -7,6 +7,7 @@ import { AnimatePresence, motion } from "framer-motion";
 // styled-components
 const Wrap = styled.div`
     background-color: rgb(45, 52, 54);
+    margin-bottom: 500px;
 `;
 const Loader = styled.div`
     height: 20vh;
@@ -36,7 +37,7 @@ const OverView = styled.p`
 const Slider = styled(motion.div)`
     position: relative;
     width: 100%;
-    height: 200px;
+    /* height: 200px; */
     top: -100px;
 `;
 const Row = styled(motion.div)`
@@ -44,15 +45,10 @@ const Row = styled(motion.div)`
     display: grid;
     grid-template-columns: repeat(6, 1fr);
     width: 100%;
-    gap: 10px;
+    gap: 5px;
 `;
-const Box = styled(motion.div)<{ bgUrl: string }>`
+const Box = styled(motion.div)`
     background-color: white;
-    height: 200px;
-    background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 1)),
-        url(${(props) => props.bgUrl});
-    background-size: cover;
-    background-position: center center;
     transform-origin: bottom center;
     &:first-child {
         transform-origin: bottom left;
@@ -60,6 +56,24 @@ const Box = styled(motion.div)<{ bgUrl: string }>`
     &:last-child {
         transform-origin: bottom right;
     }
+`;
+const BoxRank = styled(motion.h1)`
+    font-size: 40px;
+    top: 10px;
+    left: 10px;
+`;
+const BoxImg = styled(motion.img)`
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+`;
+const BoxInfo = styled(motion.div)`
+    position: fixed;
+    transform-origin: top center;
+    opacity: 0;
+    width: 100%;
+    height: 0px;
+    background-color: rgb(36, 37, 37);
 `;
 
 const ArrowBtn = styled(motion.button)`
@@ -88,16 +102,27 @@ const sliderVariants = {
     }),
 };
 const boxVariants = {
-    initial: {
-        scale: 1,
-    },
     hover: {
         scale: 1.3,
-        y: -10,
         transition: {
-            delay: 0.2,
+            delay: 0.3,
             duration: 0.3,
         },
+    },
+};
+const boxInfoVariants = {
+    initial: {
+        y: -5,
+    },
+    hover: {
+        opacity: 1,
+        y: -5,
+        height: "70%",
+        // transition: {
+        //     type: "tween",
+        //     delay: 0.3,
+        //     duration: 0.3,
+        // },
     },
 };
 
@@ -159,11 +184,9 @@ export default function Home() {
                                     initial="initial"
                                     whileHover="hover"
                                     transition={{ duration: 0.4, type: "tween" }}
-                                    bgUrl={getImage(movie.backdrop_path!, "w500")}
                                 >
-                                    {page * offset + index + 1}
-                                    <br />
-                                    {movie.title}
+                                    <BoxImg src={getImage(movie.backdrop_path!, "w500")} alt="#" />
+                                    <BoxInfo variants={boxInfoVariants}>{movie.title}</BoxInfo>
                                 </Box>
                             ))}
                     </Row>

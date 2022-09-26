@@ -18,6 +18,7 @@ const GlobalStyle = createGlobalStyle`
     body{
     font-family: "Sebang";
     color:#636e72;
+    background-color:black;
     };
     a{
     color:#636e72;

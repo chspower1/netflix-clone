@@ -3,13 +3,13 @@ const BASE_PATH = "https://api.themoviedb.org/3";
 const BASE_IMG_PATH = "https://image.tmdb.org/t/p/original";
 
 export interface Movies {
-    data: MoviesDate;
+    data: MovieDate;
     page: 1;
     results: Movie[];
     total_pages: 4;
     total_results: 62;
 }
-export interface MoviesDate {
+export interface MovieDate {
     maximun: string;
     minimum: string;
 }

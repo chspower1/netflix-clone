@@ -53,6 +53,13 @@ const Box = styled(motion.div)<{ bgUrl: string }>`
         url(${(props) => props.bgUrl});
     background-size: cover;
     background-position: center center;
+    transform-origin: bottom center;
+    &:first-child {
+        transform-origin: bottom left;
+    }
+    &:last-child {
+        transform-origin: bottom right;
+    }
 `;
 
 const ArrowBtn = styled(motion.button)`
@@ -79,6 +86,19 @@ const sliderVariants = {
         x: next ? -window.innerWidth - 10 : window.innerWidth + 10,
         transition: { duration: 1 },
     }),
+};
+const boxVariants = {
+    initial: {
+        scale: 1,
+    },
+    hover: {
+        scale: 1.3,
+        y: -10,
+        transition: {
+            delay: 0.2,
+            duration: 0.3,
+        },
+    },
 };
 
 const offset = 6;
@@ -133,7 +153,14 @@ export default function Home() {
                             .slice(1)
                             .slice(offset * page, offset * page + offset)
                             .map((movie, index) => (
-                                <Box key={movie.id} bgUrl={getImage(movie.backdrop_path!, "w500")}>
+                                <Box
+                                    key={movie.id}
+                                    variants={boxVariants}
+                                    initial="initial"
+                                    whileHover="hover"
+                                    transition={{ duration: 0.4, type: "tween" }}
+                                    bgUrl={getImage(movie.backdrop_path!, "w500")}
+                                >
                                     {page * offset + index + 1}
                                     <br />
                                     {movie.title}

@@ -3,6 +3,7 @@ import { useQuery } from "react-query";
 import { getMovies, Movies, Movie } from "../api";
 import styled from "styled-components";
 import { getImage } from "../utils";
+import { AnimatePresence, motion } from "framer-motion";
 // styled-components
 const Wrap = styled.div`
     background-color: rgb(45, 52, 54);
@@ -32,21 +33,94 @@ const OverView = styled.p`
     font-size: 20px;
     width: 40%;
 `;
+const Slider = styled(motion.div)`
+    position: relative;
+    width: 100%;
+    height: 200px;
+`;
+const Row = styled(motion.div)`
+    position: absolute;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    width: 100%;
+    gap: 10px;
+`;
+const Box = styled(motion.div)`
+    background-color: white;
+    height: 200px;
+`;
+
+const ArrowBtn = styled(motion.button)`
+    z-index: 1000;
+    position: absolute;
+    top: 50%;
+`;
+const LeftBtn = styled(ArrowBtn)`
+    left: 20px;
+`;
+const RightBtn = styled(ArrowBtn)`
+    right: 20px;
+`;
+const Svg = styled(motion.svg)`
+    width: 30px;
+    height: 30px;
+`;
+
+// Variants
+const LeftSliderVariants = {
+    initial: { x: window.outerWidth + 10 },
+    animate: { x: 0, transition: { duration: 1 } },
+    exit: { x: -window.outerWidth - 10, transition: { duration: 1 } },
+};
+const RightSliderVariants = {
+    initial: { x: -window.outerWidth - 10 },
+    animate: { x: 0, transition: { duration: 1 } },
+    exit: { x: window.outerWidth + 10, transition: { duration: 1 } },
+};
 export default function Home() {
     const { isLoading, data } = useQuery<Movies>(["getMovies"], getMovies);
-    if (isLoading) return <>Loading</>;
+    const [isRight, setIsRight] = useState(false);
+    const [index, setIndex] = useState(0);
+    const slideRight = () => {
+        setIsRight(true);
+        setIndex((cur) => cur - 1);
+    };
+    const slideLeft = () => {
+        setIsRight(false);
+        setIndex((cur) => cur + 1);
+    };
+    if (isLoading) return <Loader>Loading</Loader>;
     return (
         <Wrap>
-            {isLoading ? (
-                <Loader>Loading...</Loader>
-            ) : (
-                <>
-                    <Banner bgUrl={getImage(data?.results[0].backdrop_path!)}>
-                        <Title>{data?.results[0].title}</Title>
-                        <OverView>{data?.results[0].overview}</OverView>
-                    </Banner>
-                </>
-            )}
+            <Banner bgUrl={getImage(data?.results[0].backdrop_path!)}>
+                <Title>{data?.results[0].title}</Title>
+                <OverView>{data?.results[0].overview}</OverView>
+            </Banner>
+            <Slider>
+                <LeftBtn onClick={slideLeft}>
+                    <Svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
+                        <path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l192 192c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 278.6 86.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-192 192z" />
+                    </Svg>
+                </LeftBtn>
+                <RightBtn onClick={slideRight}>
+                    <Svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
+                        <path d="M342.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L274.7 256 105.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z" />
+                    </Svg>
+                </RightBtn>
+                <AnimatePresence>
+                    <Row
+                        variants={isRight ? RightSliderVariants : LeftSliderVariants}
+                        initial="initial"
+                        animate="animate"
+                        exit="exit"
+                        key={index}
+                    >
+                        {[1, 2, 3, 4, 5, 6].map((i) => (
+                            <Box key={i}>{i}</Box>
+                        ))}
+                    </Row>
+                </AnimatePresence>
+            </Slider>
         </Wrap>
     );
 }

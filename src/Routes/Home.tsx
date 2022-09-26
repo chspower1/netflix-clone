@@ -67,27 +67,28 @@ const Svg = styled(motion.svg)`
 `;
 
 // Variants
-const LeftSliderVariants = {
-    initial: { x: window.outerWidth + 10 },
+const sliderVariants = {
+    initial: (next: boolean) => ({ x: next ? -window.outerWidth - 10 : window.outerWidth + 10 }),
     animate: { x: 0, transition: { duration: 1 } },
-    exit: { x: -window.outerWidth - 10, transition: { duration: 1 } },
+    exit: (next: boolean) => ({
+        x: next ? window.outerWidth + 10 : -window.outerWidth - 10,
+        transition: { duration: 1 },
+    }),
 };
-const RightSliderVariants = {
-    initial: { x: -window.outerWidth - 10 },
-    animate: { x: 0, transition: { duration: 1 } },
-    exit: { x: window.outerWidth + 10, transition: { duration: 1 } },
-};
+
 export default function Home() {
     const { isLoading, data } = useQuery<Movies>(["getMovies"], getMovies);
-    const [isRight, setIsRight] = useState(false);
+    const [next, setNext] = useState(true);
     const [index, setIndex] = useState(0);
-    const slideRight = () => {
-        setIsRight(true);
-        setIndex((cur) => cur - 1);
+    const [leaving, setLeaving] = useState(false);
+    const toggleLeaving = () => {
+        setLeaving((prev) => !prev);
     };
-    const slideLeft = () => {
-        setIsRight(false);
-        setIndex((cur) => cur + 1);
+    const onClickSlide = (next: boolean) => {
+        if (leaving) return;
+        setNext(next);
+        toggleLeaving();
+        setIndex((prev) => prev - 1);
     };
     if (isLoading) return <Loader>Loading</Loader>;
     return (
@@ -97,19 +98,20 @@ export default function Home() {
                 <OverView>{data?.results[0].overview}</OverView>
             </Banner>
             <Slider>
-                <LeftBtn onClick={slideLeft}>
+                <LeftBtn onClick={() => onClickSlide(false)}>
                     <Svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
                         <path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l192 192c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 278.6 86.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-192 192z" />
                     </Svg>
                 </LeftBtn>
-                <RightBtn onClick={slideRight}>
+                <RightBtn onClick={() => onClickSlide(true)}>
                     <Svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
                         <path d="M342.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L274.7 256 105.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z" />
                     </Svg>
                 </RightBtn>
-                <AnimatePresence>
+                <AnimatePresence custom={next} onExitComplete={toggleLeaving}>
                     <Row
-                        variants={isRight ? RightSliderVariants : LeftSliderVariants}
+                        custom={next}
+                        variants={sliderVariants}
                         initial="initial"
                         animate="animate"
                         exit="exit"

@@ -5,6 +5,7 @@ import styled from "styled-components";
 import { getImage } from "../utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { useNavigate, useMatch } from "react-router-dom";
+import DetailModal from "../components/DetailModal";
 // styled-components
 const Wrap = styled.div`
     background-color: rgb(45, 52, 54);
@@ -111,7 +112,7 @@ const MovieModal = styled(motion.div)`
     z-index: 1000;
     width: 50vw;
     height: 50vh;
-    background-color: white;
+
     position: fixed;
     top: 0;
     bottom: 0;
@@ -288,12 +289,12 @@ export default function Home() {
                                 exit={{ backgroundColor: "rgba(0, 0, 0, 0)" }}
                                 transition={{ duration: 0.4 }}
                                 onClick={() => navigate("/")}
-                            ></Overlay>
+                            />
                             <MovieModal
                                 layoutId={String(movieMatch?.params.movieId)}
                                 transition={{ duration: 0.4 }}
                             >
-                                {movieMatch?.params.movieId}
+                                <DetailModal movieId={String(movieMatch?.params.movieId)} />
                             </MovieModal>
                         </>
                     )}

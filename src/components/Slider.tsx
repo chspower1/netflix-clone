@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { motion, AnimatePresence } from "framer-motion";
 import { useMatch, useNavigate } from "react-router-dom";
@@ -6,6 +6,7 @@ import { getMovies, Movies } from "../api";
 import DetailModal from "./DetailModal";
 import { getImage } from "../utils";
 import { useQuery } from "react-query";
+import { useMediaQuery } from "react-responsive";
 
 // Styled-components
 const Wrap = styled(motion.div)`
@@ -13,28 +14,32 @@ const Wrap = styled(motion.div)`
     display: flex;
     align-items: center;
     width: 100%;
-    height: 200px;
-    margin: 50px 0px;
+    height: 400px;
+    margin-bottom: 100px;
 `;
 const Title = styled.h1`
     position: absolute;
-    top: -40px;
-    left: 20px;
+    top: -10px;
+
     font-size: 28px;
     color: white;
 `;
 const Row = styled(motion.div)`
     position: absolute;
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    width: 100%;
-    height: 100%;
-    /* gap: 5px; */
+    grid-template-columns: repeat(8, 1fr);
+    @media screen and (max-width: 1200px) {
+        grid-template-columns: repeat(5, 1fr);
+    }
+    gap: 10px;
 `;
 const Box = styled(motion.div)`
+    display: flex;
+    justify-content: center;
+    align-items: center;
     background-color: white;
     transform-origin: bottom center;
-    height: 100%;
+    background-color: transparent;
     cursor: pointer;
     &:first-child {
         transform-origin: bottom left;
@@ -43,14 +48,16 @@ const Box = styled(motion.div)`
         transform-origin: bottom right;
     }
 `;
-const BoxImg = styled(motion.img)`
+export const BoxImg = styled(motion.img)`
     width: 100%;
-    height: 100%;
     object-fit: cover;
+    border-radius: 5px;
+    transform-origin: center center;
 `;
 const BoxInfo = styled(motion.div)`
-    position: fixed;
-    /* transform-origin: top center; */
+    position: absolute;
+    bottom: 0;
+    transform-origin: top center;
     opacity: 0;
     width: 100%;
     height: 100px;
@@ -87,13 +94,14 @@ const MovieModal = styled(motion.div)`
     z-index: 1000;
     width: 50vw;
     height: 50vh;
-
     position: fixed;
     top: 0;
     bottom: 0;
     right: 0;
     left: 0;
     margin: auto;
+    background-color: transparent;
+    transform-origin: center center;
 `;
 const Overlay = styled(motion.div)`
     z-index: 100;
@@ -127,19 +135,17 @@ const arrowBtnVariants = {
 };
 const boxVariants = {
     hover: {
-        scale: 1.3,
-
+        y: -15,
         transition: {
-            delay: 0.3,
-            duration: 0.3,
+            duration: 0.4,
         },
     },
 };
 const boxInfoVariants = {
-    initial: { y: -5 },
+    initial: { y: 20 },
     hover: {
         opacity: 1,
-        y: -5,
+        y: 0,
         transition: {
             type: "tween",
             delay: 0.3,
@@ -148,15 +154,13 @@ const boxInfoVariants = {
     },
 };
 const modalVariants = {
-    animate: {
-        scale: 1,
-    },
     exit: {
-        scale: 0,
+        scale: 1,
+        transition: {
+            duration: 0.4,
+        },
     },
 };
-
-const offset = 6;
 
 interface SliderProps {
     category: string;
@@ -168,12 +172,15 @@ export default function Slider({ category }: SliderProps) {
     const [next, setNext] = useState(true);
     const [page, setPage] = useState(0);
     const [leaving, setLeaving] = useState(false);
+    const [modalBgUrl, setModalBgUrl] = useState("");
     const navigate = useNavigate();
     const movieMatch = useMatch(`/movies/${category}/:movieId`);
     const toggleLeaving = () => {
         setLeaving((prev) => !prev);
     };
-
+    const [offset, setOffset] = useState(8);
+    const isMediumScreen = useMediaQuery({ maxWidth: 1200 });
+    console.log(movieMatch);
     const onClickSlide = (next: boolean) => {
         if (movies) {
             if (leaving) return console.log(leaving);
@@ -187,9 +194,19 @@ export default function Slider({ category }: SliderProps) {
             console.log(movieMatch);
         }
     };
-    const onClickBox = (movieId: number) => {
+    const onClickBox = (movieId: number, bgUrl: string) => {
         navigate(`/movies/${category}/${movieId}`);
+        setModalBgUrl(bgUrl);
     };
+    useEffect(() => {
+        if (isMediumScreen) {
+            setOffset(5);
+            console.log(isMediumScreen);
+        } else {
+            setOffset(8);
+        }
+    }, [isMediumScreen]);
+
     if (isLoading) return null;
     return (
         <Wrap>
@@ -242,7 +259,7 @@ export default function Slider({ category }: SliderProps) {
                         .slice(offset * page, offset * page + offset)
                         .map((movie, index) => (
                             <Box
-                                onClick={() => onClickBox(movie?.id!)}
+                                onClick={() => onClickBox(movie?.id!, movie?.backdrop_path!)}
                                 layoutId={`${movie?.id!}_${category}`}
                                 key={`${movie?.id!}_${category}`}
                                 variants={boxVariants}
@@ -250,7 +267,11 @@ export default function Slider({ category }: SliderProps) {
                                 whileHover="hover"
                                 transition={{ duration: 0.4, type: "tween" }}
                             >
-                                <BoxImg src={getImage(movie.backdrop_path!, "w500")} alt="#" />
+                                <BoxImg
+                                    src={getImage(movie?.poster_path!, "w500")}
+                                    layoutId={`${movie?.id!}_${category}_img`}
+                                    alt="#"
+                                />
 
                                 <BoxInfo variants={boxInfoVariants}>{movie.title}</BoxInfo>
                             </Box>
@@ -258,7 +279,7 @@ export default function Slider({ category }: SliderProps) {
                 </Row>
             </AnimatePresence>
             <AnimatePresence>
-                {movieMatch?.params && (
+                {movieMatch && (
                     <>
                         <Overlay
                             initial={{ backgroundColor: "rgba(0, 0, 0, 0)" }}
@@ -269,9 +290,13 @@ export default function Slider({ category }: SliderProps) {
                         />
                         <MovieModal
                             layoutId={`${movieMatch?.params.movieId}_${category}`}
-                            transition={{ duration: 0.4 }}
+                            transition={{ duration: 0.4, type: "tween" }}
                         >
-                            <DetailModal movieId={movieMatch?.params.movieId + ""} />
+                            <BoxImg
+                                src={getImage(modalBgUrl, "original")}
+                                layoutId={`${movieMatch?.params.movieId}_${category}_img`}
+                                transition={{ duration: 0.4 }}
+                            />
                         </MovieModal>
                     </>
                 )}

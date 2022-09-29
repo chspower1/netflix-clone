@@ -5,6 +5,7 @@ import { motion, AnimatePresence, useScroll, useAnimation } from "framer-motion"
 import { useForm } from "react-hook-form";
 
 const Nav = styled(motion.nav)`
+    z-index: 1000;
     display: flex;
     position: fixed;
     justify-content: space-between;

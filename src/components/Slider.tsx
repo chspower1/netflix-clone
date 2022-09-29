@@ -34,6 +34,9 @@ const Row = styled(motion.div)`
     @media screen and (max-width: 1200px) {
         grid-template-columns: repeat(5, 1fr);
     }
+    @media screen and (max-width: 650px) {
+        grid-template-columns: repeat(3, 1fr);
+    }
     gap: 10px;
 `;
 const Box = styled(motion.div)`
@@ -64,19 +67,21 @@ const BoxInfo = styled(motion.div)`
     transform-origin: top center;
     opacity: 0;
     width: 100%;
-    height: 100px;
+    height: 100%;
     padding: 20px;
-    background-color: rgb(36, 37, 37);
+    border-radius: 5px;
+    background-color: rgba(0, 0, 0, 0.7);
 `;
 
 const ArrowBtn = styled(motion.button)`
     z-index: 1000;
     position: absolute;
-    height: 100%;
+    height: 335px;
     width: 60px;
     background-color: rgba(0, 0, 0, 0.3);
     border: none;
     transform-origin: center center;
+    cursor: pointer;
 `;
 const LeftBtn = styled(ArrowBtn)`
     left: 0;
@@ -85,14 +90,10 @@ const RightBtn = styled(ArrowBtn)`
     right: 0px;
 `;
 const Svg = styled(motion.svg)`
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    right: 0;
-    left: 0;
     margin: auto;
     width: 30px;
     height: 30px;
+    transform-origin: center center;
 `;
 const MovieModal = styled(motion.div)`
     z-index: 1000;
@@ -124,8 +125,9 @@ const Pointer = styled(motion.div)<{ index: number; page: number }>`
     width: 10px;
     height: 10px;
     border-radius: 5px;
+    transition: all 0.5s ease;
     background-color: ${(props) =>
-        props.index === props.page ? "rgba(255, 255, 255,1)" : "rgba(255, 255, 255, 0.5)"};
+        props.index === props.page ? "rgba(255, 255, 255,1)" : "rgba(255, 255, 255, 0.3)"};
     margin: 0px 3px;
 `;
 // Variants
@@ -144,13 +146,6 @@ const arrowVariants = {
     animate: { opacity: 1 },
     exit: { opacity: 0 },
 };
-const arrowBtnVariants = {
-    initial: {
-        scaleY: 0,
-    },
-    animate: { scaleY: 1 },
-    exit: { scaleY: 0 },
-};
 const boxVariants = {
     hover: {
         y: -15,
@@ -160,10 +155,10 @@ const boxVariants = {
     },
 };
 const boxInfoVariants = {
-    initial: { y: 20 },
+    initial: { opacity: 0 },
     hover: {
         opacity: 1,
-        y: 0,
+
         transition: {
             type: "tween",
             delay: 0.3,
@@ -197,6 +192,7 @@ export default function Slider({ category }: SliderProps) {
         setLeaving((prev) => !prev);
     };
     const [offset, setOffset] = useState(8);
+    const isSmallScreen = useMediaQuery({ maxWidth: 650 });
     const isMediumScreen = useMediaQuery({ maxWidth: 1200 });
     const isBigScreen = useMediaQuery({ maxWidth: 1550 });
     console.log(category, movies);
@@ -228,7 +224,9 @@ export default function Slider({ category }: SliderProps) {
         return pointerArr;
     };
     useEffect(() => {
-        if (isMediumScreen && isBigScreen) {
+        if (isSmallScreen) {
+            setOffset(3);
+        } else if (isMediumScreen && isBigScreen) {
             setOffset(5);
             console.log(isMediumScreen, isBigScreen);
         } else if (isBigScreen) {
@@ -253,12 +251,7 @@ export default function Slider({ category }: SliderProps) {
                     exit="exit"
                     onClick={() => onClickSlide(false)}
                 >
-                    <Svg
-                        variants={arrowBtnVariants}
-                        fill="white"
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 384 512"
-                    >
+                    <Svg fill="white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
                         <path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l192 192c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 278.6 86.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-192 192z" />
                     </Svg>
                 </LeftBtn>
@@ -269,12 +262,7 @@ export default function Slider({ category }: SliderProps) {
                     exit="exit"
                     onClick={() => onClickSlide(true)}
                 >
-                    <Svg
-                        variants={arrowBtnVariants}
-                        fill="white"
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 384 512"
-                    >
+                    <Svg fill="white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
                         <path d="M342.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L274.7 256 105.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z" />
                     </Svg>
                 </RightBtn>

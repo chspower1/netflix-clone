@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { motion, AnimatePresence } from "framer-motion";
 import { useMatch, useNavigate } from "react-router-dom";
-import { Movies } from "../api";
+import { getMovies, Movies } from "../api";
 import DetailModal from "./DetailModal";
 import { getImage } from "../utils";
+import { useQuery } from "react-query";
 
 // Styled-components
 const Wrap = styled(motion.div)`
@@ -13,6 +14,7 @@ const Wrap = styled(motion.div)`
     align-items: center;
     width: 100%;
     height: 200px;
+    margin: 50px 0px;
 `;
 const Title = styled.h1`
     position: absolute;
@@ -157,19 +159,20 @@ const modalVariants = {
 const offset = 6;
 
 interface SliderProps {
-    movies: Movies;
-    title: string;
+    category: string;
 }
-export default function Slider({ movies, title }: SliderProps) {
+export default function Slider({ category }: SliderProps) {
+    const { data: movies, isLoading } = useQuery<Movies>([`${category}Movies`], () =>
+        getMovies(`${category}`)
+    );
     const [next, setNext] = useState(true);
     const [page, setPage] = useState(0);
     const [leaving, setLeaving] = useState(false);
     const navigate = useNavigate();
-    const movieMatch = useMatch("/movies/:movieId");
+    const movieMatch = useMatch(`/movies/${category}/:movieId`);
     const toggleLeaving = () => {
         setLeaving((prev) => !prev);
     };
-    console.log(movies);
 
     const onClickSlide = (next: boolean) => {
         if (movies) {
@@ -181,14 +184,16 @@ export default function Slider({ movies, title }: SliderProps) {
                 next ? (prev === maxPage ? 0 : prev + 1) : prev === 0 ? maxPage : prev - 1
             );
             console.log(movies?.results.length, maxPage, page);
+            console.log(movieMatch);
         }
     };
     const onClickBox = (movieId: number) => {
-        navigate(`/movies/${movieId}`);
+        navigate(`/movies/${category}/${movieId}`);
     };
+    if (isLoading) return null;
     return (
         <Wrap>
-            <Title>{title}</Title>
+            <Title>{category.toUpperCase()}</Title>
             <AnimatePresence>
                 <LeftBtn
                     variants={arrowVariants}
@@ -238,8 +243,8 @@ export default function Slider({ movies, title }: SliderProps) {
                         .map((movie, index) => (
                             <Box
                                 onClick={() => onClickBox(movie?.id!)}
-                                layoutId={String(movie?.id!)}
-                                key={movie?.id}
+                                layoutId={`${movie?.id!}_${category}`}
+                                key={`${movie?.id!}_${category}`}
                                 variants={boxVariants}
                                 initial="initial"
                                 whileHover="hover"
@@ -263,10 +268,10 @@ export default function Slider({ movies, title }: SliderProps) {
                             onClick={() => navigate("/")}
                         />
                         <MovieModal
-                            layoutId={String(movieMatch?.params.movieId)}
+                            layoutId={`${movieMatch?.params.movieId}_${category}`}
                             transition={{ duration: 0.4 }}
                         >
-                            <DetailModal movieId={String(movieMatch?.params.movieId)} />
+                            <DetailModal movieId={movieMatch?.params.movieId + ""} />
                         </MovieModal>
                     </>
                 )}

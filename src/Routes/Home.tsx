@@ -35,18 +35,9 @@ const OverView = styled.p`
 `;
 
 export default function Home() {
-    const { isLoading, data: movies } = useQuery<Movies>(["getMovies"], getMovies);
-    const results = useQueries([
-        {
-            queryKey: ["getMovies", 1],
-            queryFn: getMovies,
-        },
-        {
-            queryKey: ["getMovies", 2],
-            queryFn: getMovies,
-        },
-    ]);
-    console.log(results[0].data);
+    const { isLoading, data: movies } = useQuery<Movies>(["getMovies"], () =>
+        getMovies("now_playing")
+    );
     if (isLoading) return <Loader>Loading</Loader>;
     return (
         <Wrap>
@@ -54,7 +45,9 @@ export default function Home() {
                 <Title>{movies?.results[0].title}</Title>
                 <OverView>{movies?.results[0].overview}</OverView>
             </Banner>
-            <Slider movies={movies!} title="Playing Now!" />
+            <Slider category="now_playing" />
+            <Slider category="popular" />
+            <Slider category="top_rated" />
         </Wrap>
     );
 }

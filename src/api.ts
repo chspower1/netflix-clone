@@ -28,10 +28,10 @@ export interface Movie {
     vote_average?: number;
     vote_count?: number;
 }
-export async function getMovies() {
+export async function getMovies(category: string) {
     return await (
         await fetch(
-            `${BASE_PATH}/movie/now_playing?api_key=${API_KEY}&language=en-US&page=1&region=kr`
+            `${BASE_PATH}/movie/${category}?api_key=${API_KEY}&language=en-US&page=1&region=kr`
         )
     ).json();
 }

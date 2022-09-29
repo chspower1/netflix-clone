@@ -153,7 +153,7 @@ const modalVariants = {
 
 const offset = 6;
 
-export default function Slider({ movies }: Movies) {
+export default function Slider({ movies }: { movies: Movies }) {
     const [next, setNext] = useState(true);
     const [page, setPage] = useState(0);
     const [leaving, setLeaving] = useState(false);
@@ -181,7 +181,7 @@ export default function Slider({ movies }: Movies) {
     };
     return (
         <Wrap>
-            {/* <AnimatePresence>
+            <AnimatePresence>
                 <LeftBtn
                     variants={arrowVariants}
                     initial="initial"
@@ -262,7 +262,7 @@ export default function Slider({ movies }: Movies) {
                         </MovieModal>
                     </>
                 )}
-            </AnimatePresence> */}
+            </AnimatePresence>
         </Wrap>
     );
 }

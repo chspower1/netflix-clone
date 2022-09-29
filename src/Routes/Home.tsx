@@ -44,7 +44,7 @@ export default function Home() {
                 <Title>{movies?.results[0].title}</Title>
                 <OverView>{movies?.results[0].overview}</OverView>
             </Banner>
-            <Slider movies={movies} />
+            <Slider movies={movies!} />
         </Wrap>
     );
 }

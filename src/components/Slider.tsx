@@ -129,6 +129,10 @@ const Pointer = styled(motion.div)<{ index: number; page: number }>`
     background-color: ${(props) =>
         props.index === props.page ? "rgba(255, 255, 255,1)" : "rgba(255, 255, 255, 0.3)"};
     margin: 0px 3px;
+    cursor: pointer;
+    &:hover {
+        background-color: rgba(255, 255, 255, 0.5);
+    }
 `;
 // Variants
 const sliderVariants = {
@@ -218,7 +222,17 @@ export default function Slider({ category }: SliderProps) {
         if (movies) {
             for (let i = 0; i < movies?.results!.length / offset; i++) {
                 console.log(offset);
-                pointerArr.push(<Pointer index={i} page={page} />);
+                pointerArr.push(
+                    <Pointer
+                        index={i}
+                        page={page}
+                        onClick={() => {
+                            toggleLeaving();
+                            page < i ? setNext(true) : setNext(false);
+                            setPage(i);
+                        }}
+                    />
+                );
             }
         }
         return pointerArr;
@@ -236,7 +250,7 @@ export default function Slider({ category }: SliderProps) {
             setOffset(8);
             console.log(isMediumScreen, isBigScreen);
         }
-    }, [isMediumScreen, isBigScreen]);
+    }, [isMediumScreen, isBigScreen, isSmallScreen]);
 
     if (isLoading) return null;
     return (
@@ -294,8 +308,6 @@ export default function Slider({ category }: SliderProps) {
                                     layoutId={`${movie?.id!}_${category}_img`}
                                     alt="#"
                                 />
-
-                                <BoxInfo variants={boxInfoVariants}>{movie.title}</BoxInfo>
                             </Box>
                         ))}
                 </Row>

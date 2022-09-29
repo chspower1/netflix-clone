@@ -2,7 +2,7 @@ const API_KEY = "1a301bdc4abdaca0b146fc986fe4436c";
 const BASE_PATH = "https://api.themoviedb.org/3";
 
 export interface Movies {
-    data: MovieDate;
+    dates: MovieDate;
     page: 1;
     results: Movie[];
     total_pages: 4;

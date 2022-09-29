@@ -1,11 +1,7 @@
-import React, { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { getMovies, Movies, Movie } from "../api";
 import styled from "styled-components";
 import { getImage } from "../utils";
-import { AnimatePresence, motion } from "framer-motion";
-import { useNavigate, useMatch } from "react-router-dom";
-import DetailModal from "../components/DetailModal";
 import Slider from "./../components/Slider";
 // styled-components
 const Wrap = styled.div`
@@ -40,7 +36,7 @@ const OverView = styled.p`
 
 export default function Home() {
     const { isLoading, data: movies } = useQuery<Movies>(["getMovies"], getMovies);
-
+    console.log(movies);
     if (isLoading) return <Loader>Loading</Loader>;
     return (
         <Wrap>

@@ -28,6 +28,9 @@ const Row = styled(motion.div)`
     position: absolute;
     display: grid;
     grid-template-columns: repeat(8, 1fr);
+    @media screen and (max-width: 1550px) {
+        grid-template-columns: repeat(6, 1fr);
+    }
     @media screen and (max-width: 1200px) {
         grid-template-columns: repeat(5, 1fr);
     }
@@ -50,6 +53,7 @@ const Box = styled(motion.div)`
 `;
 export const BoxImg = styled(motion.img)`
     width: 100%;
+    height: 335px;
     object-fit: cover;
     border-radius: 5px;
     transform-origin: center center;
@@ -109,6 +113,20 @@ const Overlay = styled(motion.div)`
     height: 100vh;
     position: fixed;
     top: 0px;
+`;
+const PointerBox = styled.div`
+    display: flex;
+    position: absolute;
+    top: 0;
+    right: 0;
+`;
+const Pointer = styled(motion.div)<{ index: number; page: number }>`
+    width: 10px;
+    height: 10px;
+    border-radius: 5px;
+    background-color: ${(props) =>
+        props.index === props.page ? "rgba(255, 255, 255,1)" : "rgba(255, 255, 255, 0.5)"};
+    margin: 0px 3px;
 `;
 // Variants
 const sliderVariants = {
@@ -180,13 +198,14 @@ export default function Slider({ category }: SliderProps) {
     };
     const [offset, setOffset] = useState(8);
     const isMediumScreen = useMediaQuery({ maxWidth: 1200 });
-    console.log(movieMatch);
+    const isBigScreen = useMediaQuery({ maxWidth: 1550 });
+    console.log(category, movies);
     const onClickSlide = (next: boolean) => {
         if (movies) {
             if (leaving) return console.log(leaving);
             setNext(next);
             toggleLeaving();
-            const maxPage = Math.floor((movies?.results.length - 1) / offset) - 1;
+            const maxPage = Math.floor((movies?.results.length - 1) / offset);
             setPage((prev) =>
                 next ? (prev === maxPage ? 0 : prev + 1) : prev === 0 ? maxPage : prev - 1
             );
@@ -198,18 +217,33 @@ export default function Slider({ category }: SliderProps) {
         navigate(`/movies/${category}/${movieId}`);
         setModalBgUrl(bgUrl);
     };
+    const createPointer = (num: number) => {
+        const pointerArr = [];
+        if (movies) {
+            for (let i = 0; i < movies?.results!.length / offset; i++) {
+                console.log(offset);
+                pointerArr.push(<Pointer index={i} page={page} />);
+            }
+        }
+        return pointerArr;
+    };
     useEffect(() => {
-        if (isMediumScreen) {
+        if (isMediumScreen && isBigScreen) {
             setOffset(5);
-            console.log(isMediumScreen);
+            console.log(isMediumScreen, isBigScreen);
+        } else if (isBigScreen) {
+            setOffset(6);
+            console.log(isMediumScreen, isBigScreen);
         } else {
             setOffset(8);
+            console.log(isMediumScreen, isBigScreen);
         }
-    }, [isMediumScreen]);
+    }, [isMediumScreen, isBigScreen]);
 
     if (isLoading) return null;
     return (
         <Wrap>
+            <PointerBox>{createPointer(offset)}</PointerBox>
             <Title>{category.toUpperCase()}</Title>
             <AnimatePresence>
                 <LeftBtn

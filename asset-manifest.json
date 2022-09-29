@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/netflix-clone/static/css/main.c2df0300.css",
+    "main.js": "/netflix-clone/static/js/main.a91afd06.js",
+    "static/media/SEBANG Gothic OTF.otf": "/netflix-clone/static/media/SEBANG Gothic OTF.e673ab34f409ada50620.otf",
+    "static/media/SEBANG Gothic OTF Bold.otf": "/netflix-clone/static/media/SEBANG Gothic OTF Bold.799512f7506013ea5139.otf",
+    "index.html": "/netflix-clone/index.html",
+    "main.c2df0300.css.map": "/netflix-clone/static/css/main.c2df0300.css.map",
+    "main.a91afd06.js.map": "/netflix-clone/static/js/main.a91afd06.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.c2df0300.css",
+    "static/js/main.a91afd06.js"
+  ]
+}

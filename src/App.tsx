@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { HashRouter as BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./Routes/Home";
 import Search from "./Routes/Search";
 import Header from "./components/Header";
@@ -8,7 +8,7 @@ import Movie from "./Routes/Movie";
 import { ContentWrap } from "./style/style";
 function App() {
     return (
-        <Router>
+        <BrowserRouter>
             <Header />
             <ContentWrap>
                 <Routes>
@@ -19,7 +19,7 @@ function App() {
                     <Route path="/search" element={<Search />} />
                 </Routes>
             </ContentWrap>
-        </Router>
+        </BrowserRouter>
     );
 }
 

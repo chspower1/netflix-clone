@@ -15,8 +15,11 @@ const Wrap = styled(motion.div)`
     height: 200px;
 `;
 const Title = styled.h1`
-    font-size: 68px;
-    margin-bottom: 20px;
+    position: absolute;
+    top: -40px;
+    left: 20px;
+    font-size: 28px;
+    color: white;
 `;
 const Row = styled(motion.div)`
     position: absolute;
@@ -153,7 +156,11 @@ const modalVariants = {
 
 const offset = 6;
 
-export default function Slider({ movies }: { movies: Movies }) {
+interface SliderProps {
+    movies: Movies;
+    title: string;
+}
+export default function Slider({ movies, title }: SliderProps) {
     const [next, setNext] = useState(true);
     const [page, setPage] = useState(0);
     const [leaving, setLeaving] = useState(false);
@@ -181,6 +188,7 @@ export default function Slider({ movies }: { movies: Movies }) {
     };
     return (
         <Wrap>
+            <Title>{title}</Title>
             <AnimatePresence>
                 <LeftBtn
                     variants={arrowVariants}

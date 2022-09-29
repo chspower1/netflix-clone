@@ -1,4 +1,4 @@
-import { useQuery } from "react-query";
+import { useQueries, useQuery } from "react-query";
 import { getMovies, Movies, Movie } from "../api";
 import styled from "styled-components";
 import { getImage } from "../utils";
@@ -36,7 +36,17 @@ const OverView = styled.p`
 
 export default function Home() {
     const { isLoading, data: movies } = useQuery<Movies>(["getMovies"], getMovies);
-    console.log(movies);
+    const results = useQueries([
+        {
+            queryKey: ["getMovies", 1],
+            queryFn: getMovies,
+        },
+        {
+            queryKey: ["getMovies", 2],
+            queryFn: getMovies,
+        },
+    ]);
+    console.log(results[0].data);
     if (isLoading) return <Loader>Loading</Loader>;
     return (
         <Wrap>
@@ -44,7 +54,7 @@ export default function Home() {
                 <Title>{movies?.results[0].title}</Title>
                 <OverView>{movies?.results[0].overview}</OverView>
             </Banner>
-            <Slider movies={movies!} />
+            <Slider movies={movies!} title="Playing Now!" />
         </Wrap>
     );
 }
